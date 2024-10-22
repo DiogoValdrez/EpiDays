@@ -2,6 +2,7 @@ import pandas as pd
 from tkinter import filedialog as fd
 from tkinter import simpledialog
 import tkinter as tk
+import os
 
 # Parameters
 MAX_TIME_BETWEEN_EVENTS = 2000  # ms
@@ -14,10 +15,20 @@ def burst_frequency(num_events, burst_duration):
 
 def open_file_selection():
     file_path = fd.askopenfilename()
-    return file_path
+    if file_path:  # Check if a file was selected
+        file_extension = os.path.splitext(file_path)[1]  # Get the file extension
+        return file_path, file_extension  # Return both the file path and its extension
+    
+    return None, None  # Return None if no file was selected
 
 # Load the data
-file_path = open_file_selection()
+file_path, file_extension = open_file_selection()
+if file_path is None:
+    print("No file selected")
+    exit()
+if file_extension != '.atf':
+    print("Invalid file format, you must choose a .atf file")
+    exit()
 
 # Read the file, and strip extra spaces from column names
 #data = pd.read_csv(file_path, sep='\s+', engine='python', header=0, usecols=[0, 1, 2], names=['Event Start Time (ms)', 'Event End Time (ms)', 'Peak Amp (mV)'])#!change to see original excell
@@ -87,7 +98,7 @@ for i, burst in enumerate(bursts):
 
 #todo:
 #mudar unidades
-#fazer UI
+#fazer UI para selecionar paramentros ou selecionar bulk
 #fazer bulk
-#compilar
-#check ficheiros se é atf para nhaver erros + graseful death
+#compilar + imagem fixe
+#graseful death na leitura e nos calculos
