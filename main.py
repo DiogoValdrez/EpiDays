@@ -1,4 +1,7 @@
 import pandas as pd
+from tkinter import filedialog as fd
+from tkinter import simpledialog
+import tkinter as tk
 
 # Parameters
 MAX_TIME_BETWEEN_EVENTS = 2000  # ms
@@ -9,13 +12,21 @@ MIN_BURST_FREQUENCY = 2  # Hz
 def burst_frequency(num_events, burst_duration):
     return (num_events / burst_duration) * 1000
 
+def open_file_selection():
+    file_path = fd.askopenfilename()
+    return file_path
+
 # Load the data
-file_path = '../MINE/dv3.atf' 
+file_path = open_file_selection()
 
 # Read the file, and strip extra spaces from column names
-data = pd.read_csv(file_path, sep='\s+', engine='python', header=0, usecols=[0, 1, 2], names=['Event Start Time (ms)', 'Event End Time (ms)', 'Peak Amp (mV)'])#!change to see original excell
+#data = pd.read_csv(file_path, sep='\s+', engine='python', header=0, usecols=[0, 1, 2], names=['Event Start Time (ms)', 'Event End Time (ms)', 'Peak Amp (mV)'])#!change to see original excell
+#4 5 7
+df = pd.read_csv(file_path, sep='\t', skiprows=2, encoding='ISO-8859-1')
+data = df.iloc[:, [4, 5, 7]]
 
-#print(data)
+
+print(data)
 bursts = []
 current_burst = []
 current_burst_start = None
@@ -60,6 +71,8 @@ if current_burst:
 print('-------------------------------------------------------')
 print("Burst Detection Results:")
 print(f"Number of valid bursts: {len(bursts)}")
+if len(bursts) == 0:
+    exit()
 print(f"Average Number of Events: {sum(len(burst) for burst in bursts) / len(bursts)}") #! maybe meter int
 print(f"Average Burst Duration: {sum(burst[-1]['Event End Time (ms)'] - burst[0]['Event Start Time (ms)'] for burst in bursts) / len(bursts)} ms") #!float com 3 casas e segundos
 print(f"Average Burst Frequency: {sum(burst_frequency(len(burst), burst[-1]['Event End Time (ms)'] - burst[0]['Event Start Time (ms)']) for burst in bursts) / len(bursts)} Hz")    #!float com 3 casas     
@@ -73,8 +86,8 @@ for i, burst in enumerate(bursts):
 
 
 #todo:
-#fazer funcionar com excell completo
 #mudar unidades
 #fazer UI
 #fazer bulk
 #compilar
+#check ficheiros se é atf para nhaver erros + graseful death
