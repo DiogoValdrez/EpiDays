@@ -1,7 +1,5 @@
 import pandas as pd
 from tkinter import filedialog as fd
-from tkinter import simpledialog
-import tkinter as tk
 import os
 
 # Parameters
